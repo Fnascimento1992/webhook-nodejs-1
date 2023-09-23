@@ -1,0 +1,6 @@
+FROM node:20-bullseye
+
+WORKDIR /the/workdir/path
+COPY source dest
+
+RUN npm i

@@ -1,0 +1,5 @@
+node_modules
+rabbitmq-data
+.env
+mongo-data
+data
