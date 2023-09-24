@@ -1,15 +1,32 @@
 const amqp = require('amqplib');
 require('dotenv').config
+const log = require('../utils/logger')
 
-function connect(){
+let channel
+let connected = null
 
-  amqp.connect(process.env.MQ_STRING_CONECT, function(err, connection){
-    if(err){
-      throw new Error('Erro:' ,err)
-    }
+async function connect(message) {
+  try {
+    const connection = await amqp.connect(process.env.MQ_STRING_CONECT)
+    channel = await connection.createChannel()
+    await channel.assertExchange('callback', 'topic', { durable: true })
+    await channel.assertQueue(process.env.MQ_QUEUE)
+    await channel.bindQueue(process.env.MQ_QUEUE, 'callback', process.env.MQ_RKEY)
 
-  })
+  } catch (error) {
+    log.error('Erro de conexão', error)
+    setTimeout(connect,5000)
+  }
+
 }
 
-module.exports =  connect
+async function sendCallback(message) {
+
+  channel.publish('callback', process.env.MQ_RKEY, Buffer.from(JSON.stringify(message)))
+}
+
+/**criar uma função de consumer */
+
+
+module.exports = { connect, sendCallback }
 

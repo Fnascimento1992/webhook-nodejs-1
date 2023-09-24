@@ -1,13 +1,14 @@
 const express = require('express')
 const router = express.Router()
 const log = require('../utils/logger')
+const {sendCallback} = require('../mq/conn')
 
 router.post('/callback', async(req,res)=>{
   const msg = req.body
 
-  //console.log(msg)
   log.info(msg)
 
+  await sendCallback({msg})
   res.json({e:'rota ok'})
 })
 

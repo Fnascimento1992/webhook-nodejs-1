@@ -1,4 +1,5 @@
 const rabbitmq = require('./mq/conn')
+const mongo = require('../src/db/coon_db')
 const express = require('express')
 const routes = require('./routes/routes')
 require('dotenv').config()
@@ -8,9 +9,10 @@ app.use(express.json())
 app.use(routes)
 
 //iniciando conexão
-rabbitmq()
+rabbitmq.connect()
+mongo()
 
 const PORT = process.env.PORT
 app.listen(PORT, ()=>{
-  console.log(`App is running ${PORT}`)
+  console.log(`Webhook rodando na porta: ${PORT}`)
 })
