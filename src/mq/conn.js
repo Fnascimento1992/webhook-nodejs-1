@@ -12,7 +12,7 @@ async function connect(message) {
     await channel.assertExchange('callback', 'topic', { durable: true })
     await channel.assertQueue(process.env.MQ_QUEUE)
     await channel.bindQueue(process.env.MQ_QUEUE, 'callback', process.env.MQ_RKEY)
-
+    log.info('sender--rabbitmq')
   } catch (error) {
     log.error('Erro de conexão', error)
     setTimeout(connect,5000)
@@ -21,11 +21,9 @@ async function connect(message) {
 }
 
 async function sendCallback(message) {
-
-  channel.publish('callback', process.env.MQ_RKEY, Buffer.from(JSON.stringify(message)))
+  await channel.publish('callback', process.env.MQ_RKEY, Buffer.from(JSON.stringify(message)))
 }
 
-/**criar uma função de consumer */
 
 
 module.exports = { connect, sendCallback }
